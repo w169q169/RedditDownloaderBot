@@ -2,13 +2,14 @@ package bot
 
 import (
 	"encoding/json"
+	"log"
+
 	"github.com/HirbodBehnam/RedditDownloaderBot/cache"
 	"github.com/HirbodBehnam/RedditDownloaderBot/config"
 	"github.com/HirbodBehnam/RedditDownloaderBot/reddit"
 	"github.com/HirbodBehnam/RedditDownloaderBot/util"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/google/uuid"
-	"log"
 )
 
 // RunBot runs the bot with the specified token
@@ -85,8 +86,11 @@ func fetchPostDetailsAndSend(text string, chatID int64, messageID int) {
 		}
 		// If there is one media quality, download it
 		// Also allow the user to choose between photo or document in image
-		if len(data.Medias) == 1 && data.Type != reddit.FetchResultMediaTypePhoto {
+		if len(data.Medias) >= 1 {
 			switch data.Type {
+			case reddit.FetchResultMediaTypePhoto:
+				handlePhotoUpload(data.Medias[0].Link, data.Title, data.ThumbnailLink, chatID, true)
+				return
 			case reddit.FetchResultMediaTypeGif:
 				handleGifUpload(data.Medias[0].Link, data.Title, data.ThumbnailLink, chatID)
 				return
