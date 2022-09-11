@@ -249,56 +249,35 @@ func (o *Oauth) StartFetch(postUrl string) (fetchResult interface{}, fetchError 
 					})
 					return result, nil
 				case "redgifs.com":
-					// get redgifs info from api
-					redgifsid := util.GetRedGifsID(root["url"].(string))
-					if redgifsid == "" {
-						return nil, &FetchError{
-							NormalError: "cannot get redgifs id  from " + root["url"].(string) + ": " + err.Error(),
-							BotError:    "Cannot get redgifs id  from  " + root["url"].(string),
-						}
-					}
-
-					// api for redgifs is in https://i.redgifs.com/docs/index.html
-					infoUrl := fmt.Sprintf("https://api.redgifs.com/v2/gifs/%s", redgifsid)
-
-					source, err := config.GlobalHttpClient.Get(infoUrl)
+					// Download the source at first
+					source, err := config.GlobalHttpClient.Get(root["url"].(string))
 					if err != nil {
 						return nil, &FetchError{
-							NormalError: "cannot get redgifs info " + infoUrl + ": " + err.Error(),
-							BotError:    "Cannot get redgifs info " + infoUrl,
+							NormalError: "cannot get the source code of " + root["url"].(string) + ": " + err.Error(),
+							BotError:    "Cannot get the source code of " + root["url"].(string),
 						}
 					}
 					defer source.Body.Close()
-					// get video urls
-					doc, err := util.GetRedGifsInfo(source.Body)
+
+					videoURL, err := GetRedgifsVideo(source.Body)
 					if err != nil {
 						return nil, &FetchError{
-							NormalError: "cannot get the parse redgifs info from " + infoUrl + ": " + err.Error(),
-							BotError:    "Cannot get the parse redgifs info from " + infoUrl,
+							NormalError: "cannot get the video URL of " + root["url"].(string) + ": " + err.Error(),
+							BotError:    "Cannot get the video URL of " + root["url"].(string),
 						}
 					}
+
 					result := FetchResultMedia{
 						Medias: []FetchResultMediaEntry{
 							{
 								Quality: "hd",
-								Link:    doc.Gif.Urls.Hd,
-							},
-							{
-								Quality: "sd",
-								Link:    doc.Gif.Urls.Sd,
+								Link:    videoURL,
 							},
 						},
-						ThumbnailLink: doc.Gif.Urls.Thumbnail,
-						Title:         title,
-						Type:          FetchResultMediaTypeVideo,
+						Title: title,
+						Type:  FetchResultMediaTypeVideo,
 					}
 
-					if doc.Gif.Urls.Gif != "" {
-						result.Medias = append(result.Medias, FetchResultMediaEntry{
-							Quality: "gif",
-							Link:    doc.Gif.Urls.Gif,
-						})
-					}
 					return result, nil
 				default:
 					return nil, &FetchError{
