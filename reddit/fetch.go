@@ -2,9 +2,6 @@ package reddit
 
 import (
 	"fmt"
-	"github.com/HirbodBehnam/RedditDownloaderBot/config"
-	"github.com/HirbodBehnam/RedditDownloaderBot/util"
-	"github.com/PuerkitoBio/goquery"
 	"html"
 	"log"
 	"net/url"
@@ -12,6 +9,10 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/HirbodBehnam/RedditDownloaderBot/config"
+	"github.com/HirbodBehnam/RedditDownloaderBot/util"
+	"github.com/PuerkitoBio/goquery"
 )
 
 // qualities is the possible qualities of videos in reddit
@@ -254,7 +255,7 @@ func (o *Oauth) StartFetch(postUrl string) (fetchResult interface{}, fetchError 
 					if err != nil {
 						return nil, &FetchError{
 							NormalError: "cannot get the source code of " + root["url"].(string) + ": " + err.Error(),
-							BotError:    "Cannot get the source code of " + root["url"].(string),
+							BotError:    "Cannot get the source code of " + root["url"].(string) + ": " + err.Error(),
 						}
 					}
 					defer source.Body.Close()
@@ -263,7 +264,7 @@ func (o *Oauth) StartFetch(postUrl string) (fetchResult interface{}, fetchError 
 					if err != nil {
 						return nil, &FetchError{
 							NormalError: "cannot get the video URL of " + root["url"].(string) + ": " + err.Error(),
-							BotError:    "Cannot get the video URL of " + root["url"].(string),
+							BotError:    "Cannot get the video URL of " + root["url"].(string) + ": " + err.Error(),
 						}
 					}
 

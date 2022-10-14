@@ -33,11 +33,19 @@ func GetRedgifsVideo(body io.Reader) (videoUrl string, err error) {
 	for _, videoUrlItem := range urlList {
 		videoSize, err := GetVideoFileSize(videoUrlItem)
 		log.Printf("video url:%v size:%v err:%v \n", videoUrlItem, videoSize, err)
+
+		if err != nil {
+			continue
+		}
+
+		// find video available
+		if videoSize < maxDownloadSize {
+			return videoUrlItem, nil
+		}
+
 	}
 
-	videoUrl = urlList[0]
-
-	return videoUrl, nil
+	return "", fmt.Errorf("cant find video file is lower than 50mb")
 }
 
 func GetVideoFileSize(videoUrl string) (ret int, err error) {
