@@ -1,6 +1,6 @@
 module github.com/HirbodBehnam/RedditDownloaderBot
 
-go 1.18
+go 1.19
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
@@ -12,6 +12,7 @@ require (
 require (
 	github.com/go-faster/errors v0.6.1
 	github.com/go-redis/redis/v9 v9.0.0-beta.2
+	github.com/pkg/errors v0.9.1
 )
 
 require (
