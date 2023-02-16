@@ -68,5 +68,7 @@ func getAllowedUsers() (allowedIDs []int64) {
 			allowedIDs = append(allowedIDs, id)
 		}
 	}
+
+	log.Println("get allow ids", allowedIDs)
 	return
 }
