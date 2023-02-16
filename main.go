@@ -1,20 +1,27 @@
 package main
 
 import (
+	"log"
+	"os"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/HirbodBehnam/RedditDownloaderBot/bot"
 	"github.com/HirbodBehnam/RedditDownloaderBot/cache"
 	"github.com/HirbodBehnam/RedditDownloaderBot/config"
 	"github.com/HirbodBehnam/RedditDownloaderBot/reddit"
 	"github.com/HirbodBehnam/RedditDownloaderBot/util"
 	"github.com/go-faster/errors"
-	"log"
-	"os"
-	"strconv"
-	"strings"
-	"time"
 )
 
 func main() {
+	redgifsDownloadUrl := os.Getenv("redgifs_download_url")
+
+	if redgifsDownloadUrl == "" {
+		panic("please set redgifs_download_url")
+	}
+
 	errors.DisableTrace()
 	var err error
 	log.Println("Reddit Downloader Bot v" + config.Version)

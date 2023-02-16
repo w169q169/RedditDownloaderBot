@@ -5,6 +5,7 @@ import (
 	"html"
 	"log"
 	"net/url"
+	"os"
 	"path"
 	"regexp"
 	"strconv"
@@ -251,22 +252,20 @@ func (o *Oauth) StartFetch(postUrl string) (fetchResult interface{}, fetchError 
 					return result, nil
 				case "redgifs.com":
 					// Download the source at first
-					source, err := config.GlobalHttpClient.Get(root["url"].(string))
-					if err != nil {
-						return nil, &FetchError{
-							NormalError: "cannot get the source code of " + root["url"].(string) + ": " + err.Error(),
-							BotError:    "Cannot get the source code of " + root["url"].(string) + ": " + err.Error(),
-						}
-					}
-					defer source.Body.Close()
 
-					videoURL, err := GetRedgifsVideo(source.Body)
-					if err != nil {
+					redgifsid := util.GetRedGifsID(root["url"].(string))
+					if redgifsid == "" {
 						return nil, &FetchError{
-							NormalError: "cannot get the video URL of " + root["url"].(string) + ": " + err.Error(),
-							BotError:    "Cannot get the video URL of " + root["url"].(string) + ": " + err.Error(),
+							NormalError: "cannot get redgifs id  from " + root["url"].(string) + ": " + err.Error(),
+							BotError:    "Cannot get redgifs id  from  " + root["url"].(string),
 						}
 					}
+
+					// https://api.redgifs.com/v2/gifs
+					// https://api.redgifs.com/v2/gifs/sdas
+					redgifsDownloadUrl := os.Getenv("redgifs_download_url")
+
+					videoURL := redgifsDownloadUrl + "/" + redgifsid
 
 					result := FetchResultMedia{
 						Medias: []FetchResultMediaEntry{
