@@ -2,9 +2,6 @@ package reddit
 
 import (
 	"bytes"
-	"github.com/HirbodBehnam/RedditDownloaderBot/config"
-	"github.com/HirbodBehnam/RedditDownloaderBot/util"
-	"github.com/go-faster/errors"
 	"io"
 	"io/ioutil"
 	"log"
@@ -13,6 +10,10 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/HirbodBehnam/RedditDownloaderBot/config"
+	"github.com/HirbodBehnam/RedditDownloaderBot/util"
+	"github.com/go-faster/errors"
 )
 
 // We don't download anything more than this size
@@ -81,7 +82,7 @@ func DownloadVideo(vidUrl string) (audioUrl string, videoFile *os.File, err erro
 		audFile.Close()
 		os.Remove(audFile.Name())
 	}()
-	if downloadToFile(audioUrl, audFile) != nil {
+	if hasAudio && downloadToFile(audioUrl, audFile) != nil {
 		audioUrl = ""
 		hasAudio = false
 	}
