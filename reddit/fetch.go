@@ -274,8 +274,9 @@ func (o *Oauth) StartFetch(postUrl string) (fetchResult interface{}, fetchError 
 								Link:    videoURL,
 							},
 						},
-						Title: title,
-						Type:  FetchResultMediaTypeVideo,
+						ThumbnailLink: thumbnailUrl,
+						Title:         title,
+						Type:          FetchResultMediaTypeVideo,
 					}
 
 					return result, nil
