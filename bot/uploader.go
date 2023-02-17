@@ -1,13 +1,15 @@
 package bot
 
 import (
-	"github.com/HirbodBehnam/RedditDownloaderBot/reddit"
-	"github.com/HirbodBehnam/RedditDownloaderBot/util"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/HirbodBehnam/RedditDownloaderBot/reddit"
+	"github.com/HirbodBehnam/RedditDownloaderBot/util"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/sirupsen/logrus"
 )
 
 // handleGifUpload downloads a gif and then uploads it to Telegram
@@ -80,7 +82,9 @@ func handleVideoUpload(vidUrl, title, thumbnailUrl string, duration int, chatID 
 	}
 	// Check thumbnail
 	var tmpThumbnailFile *os.File = nil
-	if !util.CheckFileSize(tmpFile.Name(), NoThumbnailNeededSize) && thumbnailUrl != "" {
+	if thumbnailUrl != "" {
+		logrus.WithField("thumb", thumbnailUrl).Infof("start download thumb")
+
 		tmpThumbnailFile, err = reddit.DownloadThumbnail(thumbnailUrl)
 		if err == nil {
 			defer func() {
