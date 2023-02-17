@@ -3,8 +3,6 @@ package util
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/HirbodBehnam/RedditDownloaderBot/config"
-	"github.com/google/uuid"
 	"io"
 	"log"
 	"net/url"
@@ -13,6 +11,10 @@ import (
 	"reflect"
 	"strings"
 	"unsafe"
+
+	"github.com/HirbodBehnam/RedditDownloaderBot/config"
+	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 // IsUrl checks if a string is an url
@@ -103,6 +105,8 @@ func CheckFileSize(f string, allowed int64) bool {
 		log.Println("Cannot get file size:", err.Error())
 		return false
 	}
+	logrus.WithField("size", fi.Size()).WithField("allow", allowed).
+		Infof("check file-%s size", f)
 	return fi.Size() <= allowed
 }
 
