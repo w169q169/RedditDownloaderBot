@@ -14,6 +14,7 @@ import (
 	"github.com/HirbodBehnam/RedditDownloaderBot/config"
 	"github.com/HirbodBehnam/RedditDownloaderBot/util"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/sirupsen/logrus"
 )
 
 // qualities is the possible qualities of videos in reddit
@@ -261,11 +262,14 @@ func (o *Oauth) StartFetch(postUrl string) (fetchResult interface{}, fetchError 
 						}
 					}
 
+					logrus.WithField("id", redgifsid).Infof("start download redgifs video")
+
 					// https://api.redgifs.com/v2/gifs
 					// https://api.redgifs.com/v2/gifs/sdas
-					redgifsDownloadUrl := os.Getenv("redgifs_download_url")
+					redgifsProxyUrl := os.Getenv("redgifs_proxy_url")
 
-					videoURL := redgifsDownloadUrl + "/" + redgifsid
+					videoURL := redgifsProxyUrl + "/download/" + redgifsid
+					thumbURL := redgifsProxyUrl + "/thumb/" + redgifsid
 
 					result := FetchResultMedia{
 						Medias: []FetchResultMediaEntry{
@@ -274,7 +278,7 @@ func (o *Oauth) StartFetch(postUrl string) (fetchResult interface{}, fetchError 
 								Link:    videoURL,
 							},
 						},
-						ThumbnailLink: thumbnailUrl,
+						ThumbnailLink: thumbURL,
 						Title:         title,
 						Type:          FetchResultMediaTypeVideo,
 					}

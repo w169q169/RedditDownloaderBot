@@ -16,10 +16,10 @@ import (
 )
 
 func main() {
-	redgifsDownloadUrl := os.Getenv("redgifs_download_url")
+	redgifsDownloadUrl := os.Getenv("redgifs_proxy_url")
 
 	if redgifsDownloadUrl == "" {
-		panic("please set redgifs_download_url")
+		panic("please set redgifs_proxy_url")
 	}
 
 	errors.DisableTrace()
