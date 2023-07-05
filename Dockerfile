@@ -20,7 +20,7 @@ WORKDIR /
 
 # Add ffmpeg
 RUN apk update
-RUN apk add ffmpeg curl
+RUN apk add ffmpeg curl bash
 
 COPY --from=build /reddit-downloader-bot /reddit-downloader-bot
 

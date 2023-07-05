@@ -1,3 +1,4 @@
 .idea
 RedditDownloaderBot
 /docker-compose.yml.my
+/sync.sh
