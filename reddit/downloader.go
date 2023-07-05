@@ -2,6 +2,7 @@ package reddit
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -181,6 +182,10 @@ func DownloadAudio(audioUrl string) (*os.File, error) {
 // It also checks where the file is too big to be uploaded to Telegram or not
 // If the file is too big, it returns FileTooBigError
 func downloadToFile(link string, f *os.File) error {
+	if strings.Contains(link, "imgur.com") {
+		return downloadToFileUseCurl(link, f)
+	}
+
 	resp, err := config.GlobalHttpClient.Get(link)
 	if err != nil {
 		return err
@@ -196,6 +201,36 @@ func downloadToFile(link string, f *os.File) error {
 		return FileTooBigError
 	}
 	_, err = io.Copy(f, resp.Body)
+	return err
+}
+
+func downloadToFileUseCurl(link string, f *os.File) error {
+	tmpFile, err := os.CreateTemp("", "*.mp4")
+
+	const curlTpl = "curl -v \"%s\" -o %s"
+	curlCmd := fmt.Sprintf(curlTpl, link, tmpFile.Name())
+
+	log.Println("run command:" + curlCmd)
+
+	cmd := exec.Command("bash", "-c", curlCmd)
+
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	cmd.Stdout = os.Stdout
+	err = cmd.Run()
+	if err != nil {
+		log.Println("Cannot downloadToFileUseCurl video:", err, "\n", stderr.String())
+		tmpFile.Close()
+		os.Remove(tmpFile.Name())
+		// We don't return error here
+
+		return err
+	}
+
+	_, err = io.Copy(f, tmpFile)
+	tmpFile.Close()
+	os.Remove(tmpFile.Name())
+
 	return err
 }
 
