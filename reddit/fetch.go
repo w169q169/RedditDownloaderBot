@@ -354,21 +354,32 @@ func getPostID(postUrl string) (postID string, isComment bool, err *FetchError) 
 	}
 	if u == nil {
 		err = &FetchError{
-			NormalError: "invalid url: no url",
+			NormalError: "",
 			BotError:    "Cannot parse reddit the url. Does your text contain a reddit url?",
 		}
 		return
 	}
 	split := strings.Split(u.Path, "/")
-	if len(split) == 1 { // www.reddit.com/x
-		return split[0], false, nil
+	if len(split) == 2 { // www.reddit.com/x
+		return split[1], false, nil
 	}
 	if len(split) < 5 {
 		err = &FetchError{
-			NormalError: "invalid url: too small",
+			NormalError: "",
 			BotError:    "Cannot parse reddit the url. Does your text contain a reddit url?",
 		}
 		return
+	}
+	if split[3] == "s" {
+		followedUrl, err2 := util.FollowRedirect(u.String())
+		if err2 != nil {
+			err = &FetchError{
+				NormalError: "cannot follow shared link url: " + err2.Error(),
+				BotError:    "Cannot follow the shared link url",
+			}
+			return
+		}
+		return getPostID(followedUrl)
 	}
 	if len(split) >= 7 && split[6] != "" {
 		return split[6], true, nil
